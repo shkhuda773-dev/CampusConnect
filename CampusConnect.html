@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CampusConnect</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F6F5F1;--sf:#fff;--ink:#16202E;--mut:#5E6B7C;--line:#DDE1E6;--pri:#1F4E79;--onpri:#fff;--acc:#FBE7B0;--ok:#1E7F5C;--bad:#B3372F;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1620;--sf:#17212E;--ink:#E9EDF2;--mut:#93A0B1;--line:#2A3646;--pri:#7DB3E6;--onpri:#0F1620;--acc:#4A3A12;--ok:#4CC38F;--bad:#F08A82}}
+:root[data-theme="dark"]{--bg:#0F1620;--sf:#17212E;--ink:#E9EDF2;--mut:#93A0B1;--line:#2A3646;--pri:#7DB3E6;--onpri:#0F1620;--acc:#4A3A12;--ok:#4CC38F;--bad:#F08A82}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif}
+h1,h2,h3,.brand{font-family:"Bricolage Grotesque",Figtree,system-ui,sans-serif;margin:0}
+h1{font-size:28px}h3{font-size:18px;margin:6px 0 4px}p{margin:4px 0;max-width:70ch}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;background:var(--sf);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.brand{font-size:22px;font-weight:700;color:var(--pri)}
+.shell{display:grid;grid-template-columns:210px 1fr;max-width:1100px;margin:0 auto;gap:24px;padding:20px}
+nav{display:flex;flex-direction:column;gap:4px;align-self:start;position:sticky;top:80px}
+nav button{text-align:left;background:none;border:0;color:var(--ink);padding:9px 12px;border-radius:8px;font:inherit;cursor:pointer}
+nav button.on{background:var(--pri);color:var(--onpri);font-weight:600}
+@media(max-width:720px){.shell{grid-template-columns:1fr;padding:12px}nav{flex-direction:row;overflow-x:auto;position:static}nav button{white-space:nowrap}}
+.ph{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-bottom:16px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.card{background:var(--sf);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:12px}
+.grid .card{margin:0}
+.stat b{display:block;font:700 30px "Bricolage Grotesque",sans-serif;color:var(--pri)}
+.row{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{background:var(--acc);padding:2px 10px;border-radius:99px;font-size:13px;font-weight:600}
+.mut,time{color:var(--mut);font-size:14px}
+button,input,select,textarea{font:inherit;color:var(--ink)}
+input,select,textarea{background:var(--sf);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%}
+.acts input,.acts select{width:auto}
+.btn{background:var(--pri);color:var(--onpri);border:0;border-radius:6px;padding:8px 14px;font-weight:600;cursor:pointer}
+.btn.alt{background:none;color:var(--pri);border:1px solid var(--pri)}
+.lnk{background:none;border:0;color:var(--pri);cursor:pointer;padding:4px 6px;font-weight:600}.lnk.bad{color:var(--bad)}
+:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.bar{height:8px;background:var(--line);border-radius:4px;margin-top:6px}.bar i{display:block;height:100%;border-radius:4px;background:var(--ok)}.bar.low i{background:var(--bad)}
+.low b,.bad{color:var(--bad)}.ok{color:var(--ok)}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%}th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+label{display:block;margin:10px 0 2px;font-weight:600;font-size:14px}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--sf);color:var(--ink);width:min(440px,92vw);padding:20px}
+dialog::backdrop{background:#0008}
+.auth{max-width:400px;margin:8vh auto;padding:0 16px}
+.tabs{display:flex;gap:8px;margin-bottom:8px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;z-index:9}
+.empty{text-align:center;color:var(--mut);padding:30px}
+.done{text-decoration:line-through;color:var(--mut)}
+</style></head><body><div id="root"></div><dialog id="dlg"></dialog>
+<script>
+const K='campusconnect_v1',SUBJ=['Data Structures','DBMS','Operating Systems','Web Technologies','Mathematics'],DAYS=['Mon','Tue','Wed','Thu','Fri','Sat'];
+const uid=()=>Math.random().toString(36).slice(2,9);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const addD=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+const fmt=d=>d?new Date(d+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'';
+const $=s=>document.querySelector(s);
+let db,me=null,view='dashboard',q='',flt='All',cur=null,aSel=null,mode='login';
+function seed(){
+ const st=[['Aarav Sharma','aarav@campus.edu','CS2101'],['Diya Patil','diya@campus.edu','CS2102'],['Rohan Mehta','rohan@campus.edu','CS2103']].map(([name,email,roll])=>({id:uid(),name,email,pw:'student123',role:'student',roll,dept:'Computer Science',year:'2',phone:''}));
+ const att={};st.forEach((u,i)=>{att[u.id]={};SUBJ.forEach((s,j)=>att[u.id][s]=[24+((i*7+j*5)%15),40])});
+ return{users:[{id:'admin',name:'Campus Admin',email:'admin@campus.edu',pw:'admin123',role:'admin'},...st],att,
+ notices:[{id:uid(),title:'Mid-semester exam schedule released',cat:'Exam',body:'Exams begin next week. Check the timetable and carry your ID card.',date:addD(-1)},{id:uid(),title:'Campus placement drive',cat:'Placement',body:'Registrations for the first drive close on Friday.',date:addD(-3)},{id:uid(),title:'Library closed on Saturday',cat:'Holiday',body:'The library will reopen on Monday at 9 AM.',date:addD(-8)}],
+ events:[{id:uid(),title:'Hackathon 2026',date:addD(6),venue:'Main Auditorium',desc:'24-hour team coding challenge.',regs:[]},{id:uid(),title:'Tech Talk: Cloud Careers',date:addD(12),venue:'Seminar Hall B',desc:'Guest lecture by industry engineers.',regs:[]}],
+ materials:SUBJ.map(s=>({id:uid(),title:s+' – Unit 1 notes',subject:s,type:'Notes',link:'https://example.com'})),
+ timetable:DAYS.slice(0,5).flatMap((d,i)=>[{id:uid(),day:d,time:'09:00',subject:SUBJ[i%5],room:'A-10'+i},{id:uid(),day:d,time:'11:00',subject:SUBJ[(i+2)%5],room:'B-20'+i}]),
+ assignments:[{id:uid(),uid:st[0].id,title:'ER diagram for library system',subject:'DBMS',due:addD(2),done:false},{id:uid(),uid:st[0].id,title:'Linked list implementation',subject:'Data Structures',due:addD(7),done:false}]}}
+function load(){try{db=JSON.parse(localStorage.getItem(K))}catch(e){}if(!db){db=seed();save()}
+ try{me=db.users.find(u=>u.id===localStorage.getItem(K+'_s'))||null}catch(e){}}
+function save(){try{localStorage.setItem(K,JSON.stringify(db))}catch(e){}}
+const A=()=>me.role==='admin',m=x=>!q||JSON.stringify(x).toLowerCase().includes(q.toLowerCase());
+const coll=k=>k==='students'?db.users:db[k];
+const empty=t=>`<div class=empty>${t}</div>`;
+const S=()=>`<input type=search aria-label=Search placeholder="Search" value="${esc(q)}" oninput="q=this.value;rl()">`;
+const F=o=>`<select aria-label=Filter onchange="flt=this.value;rl()">${o.map(x=>`<option${x===flt?' selected':''}>${esc(x)}</option>`).join('')}</select>`;
+const add=(t,k)=>`<button class=btn onclick="openForm('${k}')">${t}</button>`;
+const adm=(k,id)=>A()?`<div class=acts><button class=lnk onclick="openForm('${k}','${id}')">Edit</button><button class="lnk bad" onclick="del('${k}','${id}')">Delete</button></div>`:'';
+const page=(t,a,fn,f)=>{cur=fn;return`<div class=ph><h1>${t}</h1><div class=acts>${f||''}${a||''}</div></div><div id=list>${fn()}</div>`};
+const rl=()=>{$('#list').innerHTML=cur()};
+const pct=(a,t)=>t?Math.round(a/t*100):0;
+const myAtt=u=>SUBJ.map(s=>{const[a,t]=(db.att[u]||{})[s]||[0,0];return{s,a,t,p:pct(a,t)}});
+const overall=u=>{const r=myAtt(u),a=r.reduce((x,y)=>x+y.a,0),t=r.reduce((x,y)=>x+y.t,0);return pct(a,t)};
+const todayD=()=>DAYS[(new Date().getDay()+6)%7];
+const mine=()=>db.assignments.filter(a=>a.uid===me.id);
+const CFG={
+ notices:{n:'notice',f:[['title','Title'],['cat','Category','select',['General','Exam','Placement','Holiday']],['body','Details','textarea'],['date','Date','date']]},
+ events:{n:'event',f:[['title','Title'],['date','Date','date'],['venue','Venue'],['desc','Description','textarea']],x:{regs:[]}},
+ materials:{n:'study material',f:[['title','Title'],['subject','Subject','select',SUBJ],['type','Type','select',['Notes','PDF','Video','Link']],['link','Link (URL)','url']]},
+ timetable:{n:'class',f:[['day','Day','select',DAYS],['time','Time','time'],['subject','Subject','select',SUBJ],['room','Room']]},
+ students:{n:'student',f:[['name','Full name'],['email','Email','email'],['roll','Roll number'],['dept','Department'],['year','Year','number'],['pw','Password','password']],x:{role:'student'}},
+ assignments:{n:'assignment',f:[['title','Title'],['subject','Subject','select',SUBJ],['due','Due date','date']]}};
+function openForm(k,id){const c=CFG[k],it=id?coll(k).find(x=>x.id===id):{};
+ $('#dlg').innerHTML=`<form onsubmit="saveForm(event,'${k}','${id||''}')"><h2>${id?'Edit':'Add'} ${c.n}</h2>${c.f.map(([n,l,t,o])=>{const v=n==='pw'&&id?'':it[n]??'';const req=n==='pw'&&id?'':'required';
+  return`<label for=f_${n}>${l}</label>`+(t==='select'?`<select id=f_${n} name=${n}>${o.map(x=>`<option${x===v?' selected':''}>${esc(x)}</option>`).join('')}</select>`:t==='textarea'?`<textarea id=f_${n} name=${n} rows=3 ${req}>${esc(v)}</textarea>`:`<input id=f_${n} name=${n} type=${t||'text'} value="${esc(v)}" ${req}${n==='pw'?' minlength=6':''}>`)}).join('')}
+  <div class=acts style="margin-top:16px"><button class=btn>Save ${c.n}</button><button type=button class="btn alt" onclick="$('#dlg').close()">Cancel</button></div></form>`;$('#dlg').showModal()}
+function saveForm(e,k,id){e.preventDefault();const o=Object.fromEntries(new FormData(e.target)),c=CFG[k],L=coll(k);
+ if(k==='students'&&db.users.some(u=>u.email.toLowerCase()===o.email.toLowerCase()&&u.id!==id))return toast('That email is already registered.');
+ if(id){const it=L.find(x=>x.id===id);if(k==='students'&&!o.pw)delete o.pw;Object.assign(it,o)}
+ else{const it={id:uid(),...o,...JSON.parse(JSON.stringify(c.x||{}))};if(k==='assignments'){it.uid=me.id;it.done=false}if(k==='students'){db.att[it.id]={};SUBJ.forEach(s=>db.att[it.id][s]=[0,0])}L.push(it)}
+ save();$('#dlg').close();toast('Saved');render()}
+function del(k,id){if(!confirm('Delete this '+CFG[k].n+'?'))return;const L=coll(k),i=L.findIndex(x=>x.id===id);L.splice(i,1);if(k==='students')delete db.att[id];save();render()}
+function toast(t){const d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.textContent=t;document.body.append(d);setTimeout(()=>d.remove(),2200)}
+function reg(id){const e=db.events.find(x=>x.id===id),i=e.regs.indexOf(me.id);i<0?e.regs.push(me.id):e.regs.splice(i,1);save();toast(i<0?'Registered for '+e.title:'Registration cancelled');rl()}
+function tog(id){const a=db.assignments.find(x=>x.id===id);a.done=!a.done;save();rl()}
+function setAtt(u,s,i,v){const r=db.att[u][s];r[i]=Math.max(0,+v||0);save()}
+function notes(){const n=[],d7=addD(-7),d3=addD(3),d7f=addD(7);
+ db.notices.filter(x=>x.date>=d7).forEach(x=>n.push('New notice: '+x.title));
+ if(!A()){mine().filter(a=>!a.done&&a.due<=d3).forEach(a=>n.push('Assignment due '+fmt(a.due)+': '+a.title));
+  myAtt(me.id).filter(r=>r.t&&r.p<75).forEach(r=>n.push('Low attendance in '+r.s+' ('+r.p+'%)'));
+  db.events.filter(e=>e.date<=d7f&&e.date>=addD(0)&&!e.regs.includes(me.id)).forEach(e=>n.push('Upcoming event: '+e.title+' on '+fmt(e.date)))}
+ return n}
+function showNotes(){const n=notes();$('#dlg').innerHTML=`<h2>Notifications</h2>${n.length?n.map(x=>`<p class=card>${esc(x)}</p>`).join(''):empty('You are all caught up.')}<button class="btn alt" onclick="$('#dlg').close()">Close</button>`;$('#dlg').showModal()}
+const V={
+dashboard(){cur=null;
+ if(A()){const rg=db.events.reduce((s,e)=>s+e.regs.length,0);
+  return`<div class=ph><h1>Admin dashboard</h1></div><div class=grid>${[['Students',db.users.length-1],['Notices',db.notices.length],['Events',db.events.length],['Event registrations',rg],['Study materials',db.materials.length]].map(([l,v])=>`<div class="card stat"><b>${v}</b>${l}</div>`).join('')}</div>
+  <div class=card><h3>Event registrations</h3>${db.events.map(e=>`<p><b>${esc(e.title)}</b>: ${e.regs.length} registered</p>`).join('')||empty('No events yet.')}</div>`}
+ const o=overall(me.id),p=mine().filter(a=>!a.done),ne=db.events.filter(e=>e.date>=addD(0)).sort((a,b)=>a.date.localeCompare(b.date))[0],td=db.timetable.filter(t=>t.day===todayD()).sort((a,b)=>a.time.localeCompare(b.time));
+ return`<div class=ph><h1>Hello, ${esc(me.name.split(' ')[0])}</h1></div><div class=grid>
+ <div class="card stat ${o<75?'low':''}"><b>${o}%</b>Overall attendance</div><div class="card stat"><b>${p.length}</b>Pending assignments</div><div class="card stat"><b>${ne?fmt(ne.date).slice(0,-5):'None'}</b>${ne?esc(ne.title):'No upcoming events'}</div></div>
+ <div class=card><h3>Today's classes (${todayD()})</h3>${td.map(t=>`<p>${t.time} · ${esc(t.subject)} <span class=mut>${esc(t.room)}</span></p>`).join('')||'<p class=mut>No classes today.</p>'}</div>
+ <div class=card><h3>Latest notices</h3>${db.notices.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,3).map(n=>`<p>${esc(n.title)} <time>${fmt(n.date)}</time></p>`).join('')}</div>`},
+notices(){return page('Notice board',A()&&add('Add notice','notices'),()=>{let l=db.notices.filter(m).sort((a,b)=>b.date.localeCompare(a.date));if(flt!=='All')l=l.filter(n=>n.cat===flt);
+ return l.map(n=>`<article class=card><div class=row><span class=chip>${esc(n.cat)}</span><time>${fmt(n.date)}</time></div><h3>${esc(n.title)}</h3><p>${esc(n.body)}</p>${adm('notices',n.id)}</article>`).join('')||empty('No notices match your search.')},S()+F(['All','General','Exam','Placement','Holiday']))},
+events(){return page('Events',A()&&add('Create event','events'),()=>db.events.filter(m).sort((a,b)=>a.date.localeCompare(b.date)).map(e=>{const r=e.regs.includes(me.id);
+ return`<article class=card><div class=row><h3>${esc(e.title)}</h3><time>${fmt(e.date)}</time></div><p class=mut>${esc(e.venue)}</p><p>${esc(e.desc)}</p>`+
+ (A()?`<p><b>${e.regs.length} registered:</b> ${esc(db.users.filter(u=>e.regs.includes(u.id)).map(u=>u.name).join(', ')||'No one yet')}</p>${adm('events',e.id)}`:`<button class="btn${r?' alt':''}" onclick="reg('${e.id}')">${r?'Cancel registration':'Register'}</button>`)+`</article>`}).join('')||empty('No events found.'),S())},
+materials(){return page('Study material',A()&&add('Add material','materials'),()=>{let l=db.materials.filter(m);if(flt!=='All')l=l.filter(x=>x.subject===flt);
+ return l.map(x=>`<article class=card><div class=row><div><span class=chip>${esc(x.type)}</span><h3>${esc(x.title)}</h3><p class=mut>${esc(x.subject)}</p></div>${/^https?:/.test(x.link)?`<a class="btn alt" style="text-decoration:none" href="${esc(x.link)}" target=_blank rel=noopener>Open</a>`:''}</div>${adm('materials',x.id)}</article>`).join('')||empty('No material found.')},S()+F(['All',...SUBJ]))},
+timetable(){return page('Timetable',A()&&add('Add class','timetable'),()=>DAYS.map(d=>{const l=db.timetable.filter(t=>t.day===d&&m(t)).sort((a,b)=>a.time.localeCompare(b.time));if(!l.length)return'';
+ return`<div class=card><h3>${d}${d===todayD()?' <span class=chip>Today</span>':''}</h3>${l.map(t=>`<div class=row><p>${t.time} · ${esc(t.subject)} <span class=mut>${esc(t.room)}</span></p>${adm('timetable',t.id)}</div>`).join('')}</div>`}).join('')||empty('No classes found.'),S())},
+attendance(){if(A()){if(!aSel||!db.users.some(u=>u.id===aSel))aSel=(db.users.find(u=>u.role==='student')||{}).id;
+  const sts=db.users.filter(u=>u.role==='student');cur=null;
+  return`<div class=ph><h1>Attendance</h1><select aria-label=Student onchange="aSel=this.value;render()">${sts.map(u=>`<option value=${u.id}${u.id===aSel?' selected':''}>${esc(u.name)}</option>`).join('')}</select></div>
+  ${aSel?`<div class="card tw"><table><tr><th>Subject<th>Attended<th>Total classes<th>%</tr>${SUBJ.map(s=>{const[a,t]=db.att[aSel][s]||[0,0];return`<tr><td>${s}<td><input type=number min=0 value=${a} onchange="setAtt('${aSel}','${s}',0,this.value)"><td><input type=number min=0 value=${t} onchange="setAtt('${aSel}','${s}',1,this.value)"><td>${pct(a,t)}%`}).join('')}</table></div><p class=mut>Changes save automatically.</p>`:empty('Add a student first.')}`}
+ return page('Attendance','',()=>`<div class="card stat ${overall(me.id)<75?'low':''}"><b>${overall(me.id)}%</b>Overall (minimum 75%)</div>`+myAtt(me.id).map(r=>`<div class="card ${r.t&&r.p<75?'low':''}"><div class=row><b>${r.s}</b><span>${r.a}/${r.t} · <b>${r.p}%</b></span></div><div class="bar ${r.t&&r.p<75?'low':''}"><i style="width:${r.p}%"></i></div></div>`).join(''))},
+assignments(){return page('Assignments',add('Add assignment','assignments'),()=>mine().filter(m).sort((a,b)=>a.done-b.done||a.due.localeCompare(b.due)).map(a=>{const late=!a.done&&a.due<addD(0);
+ return`<div class="card row"><label style="display:flex;gap:10px;margin:0;align-items:center;font-weight:400"><input type=checkbox style="width:auto" ${a.done?'checked':''} onchange="tog('${a.id}')"><span class="${a.done?'done':''}"><b>${esc(a.title)}</b><br><span class=mut>${esc(a.subject)} · due ${fmt(a.due)}</span></span></label><div>${late?'<span class=bad>Overdue</span>':''}<button class="lnk bad" onclick="del('assignments','${a.id}')">Delete</button></div></div>`}).join('')||empty('No assignments yet. Add one to track its deadline.'),S())},
+students(){return page('Students',add('Add student','students'),()=>`<div class="card tw"><table><tr><th>Name<th>Roll<th>Email<th>Year<th>Attendance<th></tr>${db.users.filter(u=>u.role==='student'&&m(u)).map(u=>`<tr><td>${esc(u.name)}<td>${esc(u.roll)}<td>${esc(u.email)}<td>${esc(u.year)}<td>${overall(u.id)}%<td>${adm('students',u.id)}`).join('')}</table></div>`,S())},
+profile(){cur=null;return`<div class=ph><h1>Profile</h1></div><form class=card onsubmit="event.preventDefault();Object.assign(me,Object.fromEntries(new FormData(this)));save();toast('Profile saved');render()">${[['name','Full name'],['roll','Roll number'],['dept','Department'],['year','Year'],['phone','Phone']].map(([n,l])=>`<label for=p_${n}>${l}</label><input id=p_${n} name=${n} value="${esc(me[n])}">`).join('')}<p class=mut>Email: ${esc(me.email)}</p><button class=btn>Save profile</button></form>`}};
+const NAV={student:[['dashboard','Dashboard'],['notices','Notices'],['timetable','Timetable'],['attendance','Attendance'],['assignments','Assignments'],['events','Events'],['materials','Study material'],['profile','Profile']],
+ admin:[['dashboard','Dashboard'],['notices','Notices'],['events','Events'],['materials','Study material'],['timetable','Timetable'],['attendance','Attendance'],['students','Students']]};
+function go(v){view=v;q='';flt='All';render()}
+function login(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target));
+ if(mode==='register'){if(db.users.some(u=>u.email.toLowerCase()===f.email.toLowerCase()))return toast('That email is already registered.');
+  const u={id:uid(),name:f.name,email:f.email,pw:f.pw,role:'student',roll:'',dept:'',year:'',phone:''};db.users.push(u);db.att[u.id]={};SUBJ.forEach(s=>db.att[u.id][s]=[0,0]);save();me=u}
+ else{me=db.users.find(u=>u.email.toLowerCase()===f.email.toLowerCase()&&u.pw===f.pw);if(!me)return toast('Email or password is incorrect.')}
+ try{localStorage.setItem(K+'_s',me.id)}catch(x){}view='dashboard';render()}
+function logout(){me=null;try{localStorage.removeItem(K+'_s')}catch(x){}render()}
+function render(){const r=$('#root');
+ if(!me){const reg=mode==='register';r.innerHTML=`<main class=auth><h1 class=brand>CampusConnect</h1><p class=mut>Notices, timetable, attendance, assignments and events in one place.</p><form class=card onsubmit="login(event)">
+  <div class=tabs><button type=button class="btn${reg?' alt':''}" onclick="mode='login';render()">Log in</button><button type=button class="btn${reg?'':' alt'}" onclick="mode='register';render()">Student sign up</button></div>
+  ${reg?'<label for=a_n>Full name</label><input id=a_n name=name required>':''}<label for=a_e>Email</label><input id=a_e name=email type=email required><label for=a_p>Password</label><input id=a_p name=pw type=password required minlength=6>
+  <button class=btn style="margin-top:16px;width:100%">${reg?'Create account':'Log in'}</button></form>
+  <p class=mut>Demo: admin@campus.edu / admin123 · aarav@campus.edu / student123</p></main>`;return}
+ const n=notes().length;
+ r.innerHTML=`<header class=top><span class=brand>CampusConnect</span><div class=acts><button class="btn alt" onclick="showNotes()" aria-label="Notifications">Alerts${n?' ('+n+')':''}</button><span class=mut>${esc(me.name)} (${me.role})</span><button class="btn alt" onclick="logout()">Log out</button></div></header>
+ <div class=shell><nav aria-label=Main>${NAV[me.role].map(([k,l])=>`<button class="${k===view?'on':''}" onclick="go('${k}')">${l}</button>`).join('')}</nav><main id=main>${V[view]()}</main></div>`}
+load();render();
+</script></body></html>
